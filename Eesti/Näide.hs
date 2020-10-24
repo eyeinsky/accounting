@@ -100,7 +100,7 @@ main = do
   nl
 
   -- | Käibemaksudeklaratsioonid
-  _KMDd sisendKM väljundKM tehingud
+  _KMDd sisendKM väljundKM tulu $ map (annotation %~ \(Annotation a) -> fromMaybe "" a) tehingud
   nl
 
   -- | Käibemaksu kontode saldo

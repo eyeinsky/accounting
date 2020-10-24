@@ -76,24 +76,30 @@ _KMDd sisendKm väljundKm trs = forM_ (käibemaksud sisendKm väljundKm trs) $ \
   putStr $ show (t^._1._1) <> "-" <> show (t^._1._2) <> ": "
 
   nl
-  putStr "  - KMD INF A + KMD 1.: "
-  forM_ (t^._4) $ \(amount' :: Amount, tr :: Transaction' a) -> do
+  putStr "  KMD INF A (Müügitehingud):"
+  forM_ (t^._4) $ \(amount' :: Amount, tr :: Transaction') -> do
     nl
-    putStr $ "    - " <> show amount'
-      <> " " <> show (tr^.annotation)
-      <> " " <> show (tr^.time)
-    forM_ (tr^.instructions) $ \i -> do
-      nl
-      putStr $ "      - " <> (show $ i^.amount) <> " " <> i^.account.name
+    putStrLn $ "    - tehingu kuupäev ja kirjeldus: " <> show (tr^.time) <> "/" <> tr^.annotation
+    putStrLn $ "      deklareeritud käive: " <> show (0 - amount')
+    let alus = find (\i -> i^.account == käibemaksustatavKonto) $ tr^.instructions
+    putStr $ case alus of
+      Just i -> "      arve summa käibemaksuta: " <> show (0 - i^.amount)
+      _ -> ""
 
   nl
-  putStr " - KMD 5 ja 5.1 (m.a kokku): "
+  nl
+  putStr "  KMD põhivorm:"
+  nl
+  putStr "    KMD 1 (20% määraga maksustatavad toimingud ja tehingud): "
+  putStr $ show $ 0 - (sum $ map (view _1) $ t^._4)
+
+  nl
+  putStr "    KMD 5 ja 5.1 (mahaarvamised kokku): "
   putStr $ show $ t^._3.to sum
-  putStr " = sum "
-  putStr $ show $ t^._3
+  putStr $ " (= " <> (intercalate " + " $ map show (t^._3)) <> ")"
 
   nl
-  putStr " - KMD 12 (tasumisele kuuluv käibemaks): "
-  putStr $ show $ t^._2
+  putStr "    KMD 12 (tasumisele kuuluv käibemaks): "
+  putStr $ show $ 0 - t^._2
 
   nl
