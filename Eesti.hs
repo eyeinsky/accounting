@@ -6,6 +6,9 @@ import Accounting
 
 type Transaction' = Transaction Day
 
+-- * Tõlked
+
+saldo = balance
 
 -- * Käibemaksu deklaratsioon (KMD)
 
@@ -53,8 +56,20 @@ käibemaksud sisendKm väljundKm ts = map f $ groupMonths $ sortBy (compare `on`
 
 -- * Print
 
+tekst :: String -> IO ()
+tekst = putStrLn
+
+tekst' :: String -> IO ()
+tekst' = putStr
+
 nl :: IO ()
 nl = putStrLn ""
+
+kontosaldo :: Account -> [Transaction' a] -> IO ()
+kontosaldo konto transactions = do
+  tekst' (konto^.name)
+  tekst' ": "
+  print (saldo konto transactions)
 
 -- | Käibemaksudeklaratsioonid kuude kaupa
 _KMDd :: forall a. Show a => Account -> Account -> [Transaction' a] -> IO ()
