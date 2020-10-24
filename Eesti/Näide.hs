@@ -40,19 +40,23 @@ sotsiaalmaks = kulu' 2 "Sotsiaalmaks"
 
 -- * Annotatsioon
 
-data Annotation = Annotation { description :: String }
+data Annotation = Annotation { description :: Maybe String }
 
 instance Show Annotation where
-  show (Annotation k) = show k
+  show (Annotation k) = maybe "" show k
 
 instance Semigroup Annotation where
-  _ <> a = a
+  Annotation a <> Annotation b = Annotation $ if
+    | isJust a && isJust b -> b
+    | isJust a -> a
+    | isJust b -> b
+    | otherwise -> Nothing
 
 instance Monoid Annotation where
   mempty = Annotation mempty
 
 kirjeldus :: String -> I Annotation ()
-kirjeldus text = annotate $ Annotation text
+kirjeldus text = annotate $ Annotation $ Just text
 
 -- * Tehingud
 
