@@ -70,8 +70,8 @@ kontosaldo konto transactions = do
   print (saldo konto transactions)
 
 -- | Käibemaksudeklaratsioonid kuude kaupa
-_KMDd :: Account -> Account -> [Transaction'] -> IO ()
-_KMDd sisendKm väljundKm trs = forM_ (käibemaksud sisendKm väljundKm trs) $ \t -> do
+prindiKMDd :: Account -> Account -> Account -> [Transaction'] -> IO ()
+prindiKMDd sisendKm väljundKm käibemaksustatavKonto trs = forM_ (käibemaksud sisendKm väljundKm trs) $ \t -> do
   nl
   putStr $ show (t^._1._1) <> "-" <> show (t^._1._2) <> ": "
 

@@ -100,7 +100,8 @@ main = do
   nl
 
   -- | Käibemaksudeklaratsioonid
-  _KMDd sisendKM väljundKM tulu $ map (annotation %~ \(Annotation a) -> fromMaybe "" a) tehingud
+  let tehingud' = map (annotation %~ \(Annotation a) -> fromMaybe "" a) tehingud :: [Transaction Day String]
+  prindiKMDd sisendKM väljundKM tulu tehingud'
   nl
 
   -- | Käibemaksu kontode saldo
