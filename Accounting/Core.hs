@@ -66,5 +66,5 @@ instance HasTime (Transaction t a) t where
 instructions :: Lens' (Transaction t a) [Instruction]
 instructions f (Transaction t d is) = fmap (\is' -> Transaction t d is') (f is)
 
-annotation :: Lens' (Transaction t a) a
+annotation :: Functor f => (a -> f b) -> Transaction t a -> f (Transaction t b)
 annotation f (Transaction t d is) = fmap (\d' -> Transaction t d' is) (f d)
