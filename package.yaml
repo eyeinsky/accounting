@@ -21,6 +21,7 @@ library:
   exposed-modules:
   - Accounting
   - Eesti
+  - Eesti.Näide
 
 default-extensions:
 - Arrows
