@@ -18,7 +18,8 @@ import Control.Monad.Writer
 
 newtype Amount = Amount
   { amountUn :: Scientific
-  } deriving stock (Eq, Show, Ord)
+  } deriving stock (Eq, Ord)
+    deriving Show via Scientific
     deriving Num via Scientific
     deriving Fractional via Scientific
 makeFields ''Amount
