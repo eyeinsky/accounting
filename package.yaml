@@ -44,6 +44,7 @@ default-extensions:
 - KindSignatures
 - LambdaCase
 - MultiParamTypeClasses
+- MultiWayIf
 - NamedFieldPuns
 - NoImplicitPrelude
 - NoMonomorphismRestriction

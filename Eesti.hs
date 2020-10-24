@@ -8,6 +8,7 @@ type Transaction' = Transaction Day
 
 -- * Tõlked
 
+saldo :: Account -> [Transaction t a] -> Amount
 saldo = balance
 
 -- * Käibemaksu deklaratsioon (KMD)
@@ -33,14 +34,11 @@ käibemaksud sisendKm väljundKm ts = map f $ groupMonths $ sortBy (compare `on`
       guard $ acc == sisendKm && amount' > 0
            || acc == väljundKm && amount' < 0
 
-      case () of
-        _ | acc == väljundKm && amount' < 0
-            -> pure (tr^.time, Right (amount', tr))
-
-          | acc == sisendKm && amount' > 0
-            -> pure (tr^.time, Left (amount', tr))
-
-          | otherwise -> mempty
+      if | acc == väljundKm && amount' < 0
+           -> pure (tr^.time, Right (amount', tr))
+         | acc == sisendKm && amount' > 0
+           -> pure (tr^.time, Left (amount', tr))
+         | otherwise -> mempty
 
     ym t = (t^.year, t^.month) -- ^ year-month tuple
     groupMonths = groupBy (\a b -> ym (a^._1) == ym (b^._1))
