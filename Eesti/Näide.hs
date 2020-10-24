@@ -64,24 +64,30 @@ tehingud = execT $ do
     omakapital ~> pank $ 2500.00
 
   at (stringDate "2020-02-15") $ do
-    kirjeldus "Osutatud teenus firmale X"
+    kirjeldus "Müük: müügiarve, ostja käibemaksukohuslane"
     tulu ~> võlgMulle $ 4000
     väljundKM ~> võlgMulle $ 800
     võlgMulle ~> pank $ 4800
 
   at (stringDate "2020-02-20") $ do
-    kirjeldus "Ost: mingi asi"
+    kirjeldus "Ost: arvega ostetud asi"
     võlg ~> kulu $ 300
     võlg ~> sisendKM $ 60
   at (stringDate "2020-02-24") $ do
     pank ~> võlg $ 360
 
+  at (stringDate "2020-02-25") $ do
+    kirjeldus "Ost: teine, kohe makstud asi"
+    võlg ~> kulu $ 22
+    võlg ~> sisendKM $ 4.4
+    pank ~> võlg $ 26.4
+
   at (stringDate "2020-03-15") $ do
     kirjeldus "Käibemaks: 2020-02"
-    sisendKM ~> käibemaks $ 60
+    sisendKM ~> käibemaks $ 60.0 + 4.4
     käibemaks ~> väljundKM $ 800
-    pank ~> ettemaksukonto $ 740
-    ettemaksukonto ~> käibemaks $ 740
+    pank ~> ettemaksukonto $ 735.6
+    ettemaksukonto ~> käibemaks $ 735.6
 
 -- * Raportid
 
