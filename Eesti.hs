@@ -4,7 +4,7 @@ import LocalPrelude
 import Accounting
 
 
-type Transaction' = Transaction Day
+type Transaction' = Transaction Day String
 
 -- * Tõlked
 
@@ -14,15 +14,15 @@ saldo = balance
 -- * Käibemaksu deklaratsioon (KMD)
 
 käibemaksud
-  :: forall a. Account -> Account -> [Transaction' a]
-  -> [((Integer, Int), Amount, [Amount], [(Amount, Transaction' a)])]
+  :: Account -> Account -> [Transaction']
+  -> [((Integer, Int), Amount, [Amount], [(Amount, Transaction')])]
 käibemaksud sisendKm väljundKm ts = map f $ groupMonths $ sortBy (compare `on` view _1) kms
   where
     {- | Sisend- ja väljund-käibemaksude saldo: võtame ainult deebet
          sisendkäibemaksud ja kreedit väljundkäibemaksud. -}
     kms :: [(Day, Either
-              (Amount, Transaction' a) -- ^ Sisend-käibemaks
-              (Amount, Transaction' a) -- ^ Väljund-käibemaks
+              (Amount, Transaction') -- ^ Sisend-käibemaks
+              (Amount, Transaction') -- ^ Väljund-käibemaks
             )]
     kms = do
       tr <- ts
@@ -63,14 +63,14 @@ tekst' = putStr
 nl :: IO ()
 nl = putStrLn ""
 
-kontosaldo :: Account -> [Transaction' a] -> IO ()
+kontosaldo :: Account -> [Transaction t a] -> IO ()
 kontosaldo konto transactions = do
   tekst' (konto^.name)
   tekst' ": "
   print (saldo konto transactions)
 
 -- | Käibemaksudeklaratsioonid kuude kaupa
-_KMDd :: forall a. Show a => Account -> Account -> [Transaction' a] -> IO ()
+_KMDd :: Account -> Account -> [Transaction'] -> IO ()
 _KMDd sisendKm väljundKm trs = forM_ (käibemaksud sisendKm väljundKm trs) $ \t -> do
   nl
   putStr $ show (t^._1._1) <> "-" <> show (t^._1._2) <> ": "
