@@ -1,0 +1,59 @@
+name: accounting
+version: 0.0.1
+maintainer: Markus Läll <markus.l2ll@gmail.com>
+license: MIT
+category: Finance
+
+ghc-options: -Wall -Wno-name-shadowing
+
+dependencies:
+- base
+- dlist
+- hashable
+- mtl
+- time
+- unordered-containers
+- lens
+- scientific
+
+library:
+  source-dirs: .
+  exposed-modules:
+  - Accounting
+
+default-extensions:
+- Arrows
+- BangPatterns
+- ConstraintKinds
+- DataKinds
+- DefaultSignatures
+- DeriveDataTypeable
+- DeriveFunctor
+- DeriveGeneric
+- DerivingVia
+- EmptyDataDecls
+- ExtendedDefaultRules
+- FlexibleContexts
+- FlexibleInstances
+- FunctionalDependencies
+- GADTs
+- GeneralizedNewtypeDeriving
+- InstanceSigs
+- KindSignatures
+- LambdaCase
+- MultiParamTypeClasses
+- NamedFieldPuns
+- NoImplicitPrelude
+- NoMonomorphismRestriction
+- OverloadedStrings
+- PolyKinds
+- QuasiQuotes
+- RecursiveDo
+- ScopedTypeVariables
+- StandaloneDeriving
+- TemplateHaskell
+- TupleSections
+- TypeFamilies
+- TypeInType
+- TypeOperators
+- TypeSynonymInstances
