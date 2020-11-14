@@ -80,11 +80,12 @@ prindiKMDd sisendKm väljundKm käibemaksustatavKonto trs = forM_ (käibemaksud 
   putStr "  KMD INF A (Müügitehingud):"
   forM_ (t^._4) $ \(amount' :: Amount, tr :: Transaction') -> do
     nl
-    putStrLn $ "    - tehingu kuupäev ja kirjeldus: " <> show (tr^.time) <> "/" <> tr^.annotation
+    putStrLn $ "    - tehingu kuupäev ja kirjeldus: " <> show (tr^.time) <> ", \"" <> tr^.annotation <> "\""
     let käibemaksuta = saldo käibemaksustatavKonto [tr]
     putStrLn
       $  "      deklareeritud käive: " <> show (0 - amount')
-      <> "      arve summa käibemaksuta: " <> show (0 - käibemaksuta)
+    putStrLn
+      $ "      arve summa käibemaksuta: " <> show (0 - käibemaksuta)
 
   nl
   nl

@@ -88,9 +88,13 @@ tehingud = execT $ do
 
   at (stringDate "2020-03-15") $ do
     kirjeldus "Käibemaks: 2020-02"
-    sisendKM ~> käibemaks $ 60.0 + 4.4
+    -- | Kanname käibemaksu konto @käibemaks@ peale kokku. Sisend ja
+    -- väljund on peale seda nullis.
+    sisendKM ~> käibemaks $ 64.4
     käibemaks ~> väljundKM $ 800
+    -- | Kanname ettemaksu maksuametisse
     pank ~> ettemaksukonto $ 735.6
+    -- | Käibemaksuvõlg ja ettemaks lahenduvad nulliks
     ettemaksukonto ~> käibemaks $ 735.6
 
 -- * Raportid
@@ -99,13 +103,12 @@ main :: IO ()
 main = do
   nl
 
-  -- | Käibemaksudeklaratsioonid
+  tekst "Käibemaksudeklaratsioonid:"
   let tehingud' = map (annotation %~ \(Annotation a) -> fromMaybe "" a) tehingud :: [Transaction Day String]
   prindiKMDd sisendKM väljundKM tulu tehingud'
   nl
 
-  -- | Käibemaksu kontode saldo
-  tekst "Käibemaksukontod:"
+  tekst "Käibemaksu kontode saldo:"
   kontosaldo sisendKM tehingud
   kontosaldo väljundKM tehingud
   kontosaldo käibemaks tehingud
