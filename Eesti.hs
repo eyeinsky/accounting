@@ -8,6 +8,7 @@ type Transaction' = Transaction Day String
 
 -- * Tõlked
 
+-- | Konto koondsumma üle tehingute
 saldo :: Account -> [Transaction t a] -> Amount
 saldo = balance
 
@@ -80,18 +81,17 @@ prindiKMDd sisendKm väljundKm käibemaksustatavKonto trs = forM_ (käibemaksud 
   forM_ (t^._4) $ \(amount' :: Amount, tr :: Transaction') -> do
     nl
     putStrLn $ "    - tehingu kuupäev ja kirjeldus: " <> show (tr^.time) <> "/" <> tr^.annotation
-    putStrLn $ "      deklareeritud käive: " <> show (0 - amount')
-    let alus = find (\i -> i^.account == käibemaksustatavKonto) $ tr^.instructions
-    putStr $ case alus of
-      Just i -> "      arve summa käibemaksuta: " <> show (0 - i^.amount)
-      _ -> ""
+    let käibemaksuta = saldo käibemaksustatavKonto [tr]
+    putStrLn
+      $  "      deklareeritud käive: " <> show (0 - amount')
+      <> "      arve summa käibemaksuta: " <> show (0 - käibemaksuta)
 
   nl
   nl
   putStr "  KMD põhivorm:"
   nl
   putStr "    KMD 1 (20% määraga maksustatavad toimingud ja tehingud): "
-  putStr $ show $ 0 - (sum $ map (view _1) $ t^._4)
+  putStr $ show $ 0 - (saldo käibemaksustatavKonto $ map snd $ t^._4)
 
   nl
   putStr "    KMD 5 ja 5.1 (mahaarvamised kokku): "
