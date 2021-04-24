@@ -95,7 +95,7 @@ prindiKMDd sisendKm väljundKm käibemaksustatavKonto trs = forM_ (käibemaksud 
   putStr $ show $ 0 - (saldo käibemaksustatavKonto $ map snd $ t^._4)
 
   nl
-  putStr "    KMD 5 ja 5.1 (mahaarvamised kokku): "
+  putStr "    KMD 5 (mahaarvamised kokku): "
   putStr $ show $ t^._3.to sum
   putStr $ " (= " <> (intercalate " + " $ map show (t^._3)) <> ")"
 
