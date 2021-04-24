@@ -93,6 +93,9 @@ prindiKMDd sisendKm väljundKm käibemaksustatavKonto trs = forM_ (käibemaksud 
   nl
   putStr "    KMD 1 (20% määraga maksustatavad toimingud ja tehingud): "
   putStr $ show $ 0 - (saldo käibemaksustatavKonto $ map snd $ t^._4)
+  nl
+  putStr "    KMD 4 (Käibemaks kokku (20% lahtrist 1 + 9% lahtrist 2) (+)): "
+  putStr $ show $ sum $ map (abs . fst) (t^._4)
 
   nl
   putStr "    KMD 5 (mahaarvamised kokku): "
