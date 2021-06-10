@@ -5,6 +5,7 @@ import Data.Time
 import Data.Time.Calendar.WeekDate
 import Control.Lens
 
+
 day :: Lens' Day Integer
 day f (ModifiedJulianDay a) = fmap (\a' -> ModifiedJulianDay a') (f a)
 
@@ -28,17 +29,7 @@ year f a = fmap mk (f y)
     (y, m, d) = toGregorian a
     mk y' = fromGregorian y' m d
 
-data Weekday
-  = Monday
-  | Tuesday
-  | Wednesday
-  | Thursday
-  | Friday
-  | Saturday
-  | Sunday
-  deriving (Eq, Show, Read, Enum)
-
-weekday :: Lens' Day Weekday
+weekday :: Lens' Day DayOfWeek
 weekday f a = fmap mk (f $ toEnum $ i - 1)
   where
     mk wd = fromWeekDate y yw (fromEnum wd + 1)
@@ -50,7 +41,7 @@ weeknumber f a = fmap mk (f yw)
     mk yw' = fromWeekDate y yw' wdi
     (y, yw, wdi) = toWeekDate a
 
-workday :: Weekday -> Bool
+workday :: DayOfWeek -> Bool
 workday wd = fromEnum wd < 5
 
 -- | Can only get, not set, hence function
