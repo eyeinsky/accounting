@@ -104,8 +104,7 @@ main = do
   nl
 
   tekst "Käibemaksudeklaratsioonid:"
-  let tehingud' = map (annotation %~ \(Annotation a) -> fromMaybe "" a) tehingud :: [Transaction Day String]
-  prindiKMDd sisendKM väljundKM tulu tehingud'
+  prindiKMDd sisendKM väljundKM tulu tehingud
   nl
 
   tekst "Käibemaksu kontode saldo:"

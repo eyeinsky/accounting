@@ -4,8 +4,6 @@ import LocalPrelude
 import Accounting
 
 
-type Transaction' = Transaction Day String
-
 -- * Tõlked
 
 -- | Konto koondsumma üle tehingute
@@ -15,15 +13,18 @@ saldo = balance
 -- * Käibemaksu deklaratsioon (KMD)
 
 käibemaksud
-  :: Account -> Account -> [Transaction']
-  -> [((Integer, Int), Amount, [Amount], [(Amount, Transaction')])]
+  :: forall a . Show a
+  => Account
+  -> Account
+  -> [Transaction Day a]
+  -> [((Integer, Int), Amount, [Amount], [(Amount, Transaction Day a)])]
 käibemaksud sisendKm väljundKm ts = map f $ groupMonths $ sortBy (compare `on` view _1) kms
   where
     {- | Sisend- ja väljund-käibemaksude saldo: võtame ainult deebet
          sisendkäibemaksud ja kreedit väljundkäibemaksud. -}
     kms :: [(Day, Either
-              (Amount, Transaction') -- ^ Sisend-käibemaks
-              (Amount, Transaction') -- ^ Väljund-käibemaks
+              (Amount, Transaction Day a) -- ^ Sisend-käibemaks
+              (Amount, Transaction Day a) -- ^ Väljund-käibemaks
             )]
     kms = do
       tr <- ts
@@ -71,16 +72,18 @@ kontosaldo konto transactions = do
   print (saldo konto transactions)
 
 -- | Käibemaksudeklaratsioonid kuude kaupa
-prindiKMDd :: Account -> Account -> Account -> [Transaction'] -> IO ()
+prindiKMDd
+  :: forall a . (Show a)
+  => Account -> Account -> Account -> [Transaction Day a] -> IO ()
 prindiKMDd sisendKm väljundKm käibemaksustatavKonto trs = forM_ (käibemaksud sisendKm väljundKm trs) $ \t -> do
   nl
   putStr $ show (t^._1._1) <> "-" <> show (t^._1._2) <> ": "
 
   nl
   putStr "  KMD INF A (Müügitehingud):"
-  forM_ (t^._4) $ \(amount' :: Amount, tr :: Transaction') -> do
+  forM_ (t^._4) $ \(amount' :: Amount, tr :: Transaction Day a) -> do
     nl
-    putStrLn $ "    - tehingu kuupäev ja kirjeldus: " <> show (tr^.time) <> ", \"" <> tr^.annotation <> "\""
+    putStrLn $ "    - tehingu kuupäev ja kirjeldus: " <> show (tr^.time) <> ", \"" <> tr^.annotation.to show <> "\""
     let käibemaksuta = saldo käibemaksustatavKonto [tr]
     putStrLn
       $  "      deklareeritud käive: " <> show (0 - amount')
