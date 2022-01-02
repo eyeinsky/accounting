@@ -154,11 +154,12 @@ printAastaaruanded
   -> Account
   -> Account
   -> [Account]
+  -> Integer                       -- ^ Kuni aastani
   -> [Transaction Day a]
   -> IO ()
-printAastaaruanded mkAnn ktKoond aruandeperioodiKasum tööjõukuluKontod ts = do
+printAastaaruanded mkAnn ktKoond aruandeperioodiKasum tööjõukuluKontod kuniAastani ts = do
   let koosLk' = aastaaruanded mkAnn ts ktKoond aruandeperioodiKasum :: [YearTS a]
-      koosLk = takeWhile (\(y, _, _) -> y <= 2021) koosLk' :: [YearTS a]
+      koosLk = takeWhile (\(y, _, _) -> y <= kuniAastani) koosLk' :: [YearTS a]
 
       koosLkZip :: [(YearTS a, YearTS a)]
       koosLkZip@ (((y, ts', _), _) :_) = koosLk `zip` tail koosLk

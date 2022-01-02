@@ -167,4 +167,4 @@ main = do
   let
     lõpukandeAnnotatsioon :: Integer -> Maybe Annotation
     lõpukandeAnnotatsioon aasta = Just $ Annotation $ Just $ show aasta <> " lõpukanne"
-  printAastaaruanded lõpukandeAnnotatsioon ktKoond aruandeperioodiKasum tööjõukulud tehingud
+  printAastaaruanded lõpukandeAnnotatsioon ktKoond aruandeperioodiKasum tööjõukulud 2021 tehingud
