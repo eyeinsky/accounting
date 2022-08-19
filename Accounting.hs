@@ -35,7 +35,7 @@ listUsedAccounts ts = sort $ nubBy cmp $ do
 -- | Group transactions @ts@ by years
 tsByYear :: forall a . [Transaction Day a] -> [(Integer, [Transaction Day a])]
 tsByYear [] = []
-tsByYear ts@ (_ : _) = go (earliestTr^.time.year) ts
+tsByYear ts@(_ : _) = go (earliestTr^.time.year) ts
   where
     earliestTr = minimumBy (compare `on` view time) ts
 

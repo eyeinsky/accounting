@@ -67,6 +67,7 @@ accountType acc = case acc^.number.to (head . show) of
   '3' -> 3
   '4' -> 4
   '5' -> 5
+  _ -> error "this should never happen, Accounting/Helpers.hs::64"
 
 bankMonth :: Account -> Integer -> Int -> [Transaction Day a] -> ((Amount, [Amount]), (Amount, [Amount]))
 bankMonth acc y m ts = (sum' debits, sum' credits)

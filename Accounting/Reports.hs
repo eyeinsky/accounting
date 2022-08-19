@@ -27,7 +27,7 @@ intervals :: forall t a b. Eq b => (Transaction t a -> b) -> [Transaction t a] -
 intervals key ts = map (fmap balances) groups
   where
     groups' = groupBy ((==) `on` key) ts :: [[Transaction t a]]
-    groups = map (\ts@ (t : _) -> (key t, ts)) groups'
+    groups = map (\ts@(t : _) -> (key t, ts)) groups'
 
 vats :: Account -> Account -> [Transaction Day a] -> [((Integer, Int), Amount)]
 vats vatIn vatOut ts = ret
@@ -46,4 +46,4 @@ vats vatIn vatOut ts = ret
     mon t = (t^.year, t^.month)
 
     kuud = kuu $ sortBy (compare `on` view _1) kms
-    ret = map (\is@ ((k, _) : _) -> (mon k, sum $ map (view _2) is)) kuud
+    ret = map (\is@((k, _) : _) -> (mon k, sum $ map (view _2) is)) kuud

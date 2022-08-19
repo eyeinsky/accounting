@@ -78,7 +78,7 @@ execT tm = merge (tw^.single.to toList) (tw^.infinite)
 
 -- | Merge a two lists of transactions and keep transactions' time-ordering
 merge :: Time t => [Transaction t a] -> [Transaction t a] -> [Transaction t a]
-merge ass@ (a : as) bss@ (b : bs) = case (compare `on` view time) a b of
+merge ass@(a : as) bss@(b : bs) = case (compare `on` view time) a b of
   LT -> a : merge as bss
   EQ -> a : b : merge as bs
   GT -> b : merge ass bs

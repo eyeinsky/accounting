@@ -44,7 +44,7 @@ käibemaksud sisendKm väljundKm ts = map f $ groupMonths $ sortBy (compare `on`
 
     ym t = (t^.year, t^.month) -- ^ year-month tuple
     groupMonths = groupBy (\a b -> ym (a^._1) == ym (b^._1))
-    f is@ (t : _) = let
+    f is@(t : _) = let
       is' = map (view _2) is
       amounts = map (either (view _1) (view _1)) is' :: [Amount]
       arved = is'

@@ -10,7 +10,6 @@ import Data.Typeable
 import Data.Data
 import Data.Scientific
 import GHC.Generics (Generic)
-import GHC.Real (Fractional(..))
 import qualified Data.Hashable as H
 import Control.Monad.Writer
 

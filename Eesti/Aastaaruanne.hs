@@ -140,7 +140,7 @@ printAastaaruanne tööjõukuluKontod aastaTs kokkuTs mb = do
   tekst "================================================================="
 
   let (_, _, _, tulud, kulud) = toAccountTypes aastaTs :: ByAccountTypes Day a
-  printKasumiaruanne tööjõukuluKontod tulud kulud
+  _ <- printKasumiaruanne tööjõukuluKontod tulud kulud
 
   nl
   nl
@@ -162,12 +162,12 @@ printAastaaruanded mkAnn ktKoond aruandeperioodiKasum tööjõukuluKontod kuniAa
       koosLk = takeWhile (\(y, _, _) -> y <= kuniAastani) koosLk' :: [YearTS a]
 
       koosLkZip :: [(YearTS a, YearTS a)]
-      koosLkZip@ (((y, ts', _), _) :_) = koosLk `zip` tail koosLk
+      koosLkZip@(((y, ts', _), _) :_) = koosLk `zip` tail koosLk
 
       -- | [(aasta, akumuleerunud kanded, selle aasta kanded)]
       aastadAccTs :: [(Integer, [Transaction Day a], [Transaction Day a])]
       aastadAccTs = let
-        f acc@ ((_, tsAcc, _) : _) ((_, _, lkEelmineAasta), (seeAasta, tsSeeAasta, _)) = let
+        f acc@((_, tsAcc, _) : _) ((_, _, lkEelmineAasta), (seeAasta, tsSeeAasta, _)) = let
           tsAcc' = tsAcc <> (lkEelmineAasta : tsSeeAasta)
           in (seeAasta, tsAcc', tsSeeAasta) : acc
         in foldl' f [(y, ts', ts')] koosLkZip
