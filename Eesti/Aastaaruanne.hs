@@ -33,14 +33,13 @@ lõpukanne
   -> Account             -- ^ Koondkonto, kuhu tulud ja kulud kokku kanda
   -> Account             -- ^ Aruandeperioodi kasum, kuhu tulemus lõpuks kantakse
   -> Transaction Day a
-lõpukanne ann ts koond aruandeperioodiKasum = let
+lõpukanne maybeAnn ts koond aruandeperioodiKasum = let
   aasta = head ts^.time.year :: Integer
   (_,_,_, tulud, kulud) = toAccountTypes ts
   (instructions, _) = lõpukandeInstruktsioonid tulud kulud koond aruandeperioodiKasum
-  tr = at (stringDate $ show aasta <> "-12-31") $ do
-    maybe (return ()) annotate ann
-    instructions
-  in head (execT tr)
+  lkTime = stringDate $ show aasta <> "-12-31"
+  (ann, instructions') = execI instructions
+  in Transaction lkTime (fromMaybe mempty maybeAnn <> ann) instructions'
 
 -- | (aasta, aasta kanded, lõpukanne)
 type YearTS a = (Integer, [Transaction Day a], Transaction Day a)
@@ -70,7 +69,7 @@ printKasumiaruanne
   -> ByAccounts t a                -- ^ Kulud kontode kaupa
   -> IO Amount
 printKasumiaruanne tööjõukuluKontod tulud kulud = let
-  (tööjõukulud', muudKulud') =
+  (tööjõukulud', muudKulud) =
     partition' (\k _ -> k `elem` tööjõukuluKontod) kulud
 
   in do
@@ -84,8 +83,8 @@ printKasumiaruanne tööjõukuluKontod tulud kulud = let
 
   h3 "Kulu"
   h4 "Kaubad, toore, materjal ja teenused"
-  muuKulu' <- printAccounts muudKulud'
-  ridaEur "Kokku" muuKulu'
+  muudKuludKokku <- printAccounts muudKulud
+  ridaEur "Kokku" muudKuludKokku
   nl
 
   h4 "Tööjõukulud"
@@ -95,7 +94,7 @@ printKasumiaruanne tööjõukuluKontod tulud kulud = let
 
   h3 "Ärikasum (kahjum)"
   ridaEur "Tulu kokku" tuludSaldo
-  let kõikKulu = muuKulu' + tööjõukulud'
+  let kõikKulu = muudKuludKokku + tööjõukulud'
   ridaEur "Kulu kokku" kõikKulu
   let ärikasum = tuludSaldo - kõikKulu
   ridaEur "Ärikasum" ärikasum
@@ -136,7 +135,7 @@ printAastaaruanne tööjõukuluKontod aastaTs kokkuTs mb = do
   nl
   nl
   tekst "================================================================="
-  maybe (return ()) (tekst . TS.unpack) mb
+  maybe (return ()) (tekst . ("Aastaaruanne "<>) . TS.unpack) mb
   tekst "================================================================="
 
   let (_, _, _, tulud, kulud) = toAccountTypes aastaTs :: ByAccountTypes Day a

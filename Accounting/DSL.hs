@@ -1,22 +1,13 @@
-module Accounting.DSL
-  ( module Export
-  , module Accounting.DSL
-  ) where
+module Accounting.DSL where
 
-import Data.Time as Export
-import qualified Data.DList as D
-import Data.Ord
-
-import Data.Time.Lens as Export
-import LocalPrelude as Export
+import LocalPrelude
 import Accounting.Core as Export
-
 
 -- * The instruction DSL
 
 data IMonoid s a = IMonoid
   { iMonoidAnnotation :: s
-  , iMonoidInstructions :: D.DList a
+  , iMonoidInstructions :: DList a
   }
 
 instance Semigroup s => Semigroup (IMonoid s a) where
@@ -45,32 +36,32 @@ execI im = (ann, toList is)
 
 -- * The T monad
 
-data TW t a = TW
-  { tWSingle :: D.DList (Transaction t a)
-  , tWInfinite :: [Transaction t a]
+data TParam t a = TParam
+  { tParamSingles :: DList (Transaction t a)
+  , tParamInfinites :: [Transaction t a]
   }
   {- | Single and infinite are separate since with infinite streams of
  transactions we want to sort them, so they can't be DList's, since
  these need to be turned into regular lists -- which is impossible
  with infinite lists (fix: is it really?)
   -}
-makeFields ''TW
+makeFields ''TParam
 
-instance Time t => Semigroup (TW t a) where
-  a <> b = TW x y
+instance Time t => Semigroup (TParam t a) where
+  a <> b = TParam x y
     where
-      x = (mappend `on` view single) a b
-      y = (merge `on` view infinite) a b
+      x = (mappend `on` view singles) a b
+      y = (merge `on` view infinites) a b
 
-instance Time t => Monoid (TW t a) where
-  mempty = TW mempty mempty
+instance Time t => Monoid (TParam t a) where
+  mempty = TParam mempty mempty
 
-type T t a = Writer (TW t a)
+type T t ann = Writer (TParam t ann)
 
 -- | Run the T monad and merge the finite and infinite transactions by
 -- date.
 execT :: Time t => T t a b -> [Transaction t a]
-execT tm = merge (tw^.single.to toList) (tw^.infinite)
+execT tm = merge (tw^.singles.to toList) (tw^.infinites)
   where
     tw = execWriter tm
 
@@ -89,8 +80,8 @@ merge as [] = as
 verify :: Transaction t a -> Bool
 verify (Transaction _ _ is) = sum (map (^.amount) is) == 0
 
-at :: Time t => t -> I ann a -> T t ann ()
-at time im = tell $ single .~ pure tr $ mempty
+transact :: Time t => t -> I ann a -> T t ann ()
+transact time im = append $ singles .~ pure tr $ mempty
   where
     (ann, is) = execI im
     tr = Transaction time ann is
@@ -100,12 +91,17 @@ type Filter t a = [Transaction t a] -> [Transaction t a]
 -- | Repeat transaction with iterating with 'next', starting from
 -- 'from', then applying 'f' to perhaps filter or take a certain
 -- amount.
-every :: forall t ann b. Time t => Filter t ann -> (Transaction t ann -> Transaction t ann) -> t -> I ann b -> T t ann ()
-every p next from im = mempty & infinite .~ (p ts) & tell
+every
+  :: forall t ann b. Time t
+  => Filter t ann -> (Transaction t ann -> Transaction t ann) -> t -> I ann b -> T t ann ()
+every p next from im = mempty & infinites .~ (p ts) & append
   where
     (ann, is) = execI im
     t0 = Transaction from ann is
     ts = iterate next t0
+
+append :: Time t => TParam t ann -> T t ann ()
+append = tell
 
 -- * API
 
@@ -140,8 +136,8 @@ infixl 5 -|, +|, |-, |+, ~>
 until :: Time t => t -> (Transaction t ann -> Transaction t ann) -> t -> I ann b -> T t ann ()
 until t = every (filter (\tr -> tr^.time < t))
 
-monthly :: Filter Day ann -> Day -> I ann b -> Writer (TW Day ann) ()
+monthly :: Filter Day ann -> Day -> I ann b -> T Day ann ()
 monthly f = every f (time.month %~ (+1))
 
-weekly :: Filter Day ann -> Day -> I ann b -> Writer (TW Day ann) ()
+weekly :: Filter Day ann -> Day -> I ann b -> T Day ann ()
 weekly f = every f (time.day %~ (+7))

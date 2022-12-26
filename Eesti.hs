@@ -56,15 +56,6 @@ käibemaksud sisendKm väljundKm ts = map f $ groupMonths $ sortBy (compare `on`
 
 -- * Print
 
-tekst :: String -> IO ()
-tekst = putStrLn
-
-tekst' :: String -> IO ()
-tekst' = putStr
-
-nl :: IO ()
-nl = putStrLn ""
-
 kontosaldo :: Account -> [Transaction t a] -> IO ()
 kontosaldo konto transactions = do
   tekst' (konto^.name)

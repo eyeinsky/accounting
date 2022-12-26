@@ -1,17 +1,11 @@
 {-# LANGUAGE DeriveAnyClass #-}
-module Accounting.Core
-  ( module Accounting.Core
-  , module Control.Monad.Writer
-  ) where
+module Accounting.Core where
 
 import LocalPrelude
-
 import Data.Typeable
 import Data.Data
-import Data.Scientific
 import GHC.Generics (Generic)
 import qualified Data.Hashable as H
-import Control.Monad.Writer
 
 -- ** Amount
 

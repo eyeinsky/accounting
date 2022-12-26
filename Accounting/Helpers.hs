@@ -1,53 +1,12 @@
 module Accounting.Helpers
   ( module Accounting.Helpers
-  , module Export
   ) where
 
 import qualified Data.HashMap.Strict as HM
-import Data.Hashable
 import Control.Monad
-import Data.Scientific
-import Data.Coerce
 import LocalPrelude
 import Accounting
-import Eesti as Export (nl, tekst)
 import Eesti
-
--- * Generic (Prelude material)
-
-partition'
-  :: (Eq k, Hashable k, Monoid v)
-  => (k -> v -> Bool) -> HM.HashMap k v -> (HM.HashMap k v, HM.HashMap k v)
-partition' predicate hm = HM.foldlWithKey' f mempty hm
-  where
-    f (trues, falses) k v = if predicate k v
-      then (HM.insertWith mappend k v trues, falses)
-      else (trues, HM.insertWith mappend k v falses)
-
--- * Print
-
-title :: String -> IO ()
-title t = putStrLn $ t <> "\n"
-
-h1 :: String -> IO ()
-h1 t = title $ "* " <> t
-
-h2 :: String -> IO ()
-h2 t = title $ "** " <> t
-
-h3 :: String -> IO ()
-h3 t = title $ "*** " <> t
-
-h4 :: String -> IO ()
-h4 t = title $ "**** " <> t
-
-rida :: Show a => String -> a -> IO ()
-rida tekst väärtus = putStrLn $ tekst <> ": " <> show väärtus
-
-ridaEur :: String -> Amount -> IO ()
-ridaEur tekst v = putStrLn $ tekst <> ": " <> str <> " (" <> show v <> ")"
-  where
-    str = formatScientific Fixed (Just 0) $ coerce v
 
 -- * Transactions
 
@@ -83,7 +42,10 @@ bankMonth acc y m ts = (sum' debits, sum' credits)
 -- ** Saldo
 
 saldoFilter :: (Account -> Bool) -> [Transaction t a] -> Amount
-saldoFilter p ts = sumAmount $ map fst $ accountFilter p ts
+saldoFilter p ts = ts
+  & accountFilter p
+  & map fst
+  & sumAmount
 
 -- | All debited instructions from account
 saldoDebit :: Account -> [Transaction t a] -> [(Instruction, Transaction t a)]
