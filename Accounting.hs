@@ -66,3 +66,24 @@ tsByYear ts@(_ : _) = go (earliestTr^.time.year) ts
 
 at :: Time t => t -> I ann a -> T t ann ()
 at = transact
+
+-- * State
+
+getAllTransactions :: Time t => T t ann [Transaction t ann]
+getAllTransactions = do
+  tParam <- get
+  let
+    singles' = toList $ tParam^.singles
+    infinites' = tParam^.infinites
+      & takeWhile (\t -> t^.time < (last singles'^.time))
+  pure $ merge singles' infinites'
+
+getBalance :: Time t => Account -> T t ann Amount
+getBalance account = balance account <$> getAllTransactions
+
+assertBalance :: Time t => Account -> Amount -> T t ann ()
+assertBalance account amount = do
+  amount' <- getBalance account
+  when (amount' /= amount) $ let
+      msg = "Account " <> account^.name <> " has balance " <> show amount' <> " instead of " <> show amount
+    in error msg
