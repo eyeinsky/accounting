@@ -56,14 +56,14 @@ instance Time t => Semigroup (TParam t a) where
 instance Time t => Monoid (TParam t a) where
   mempty = TParam mempty mempty
 
-type T t ann = Writer (TParam t ann)
+type T t ann = State (TParam t ann)
 
 -- | Run the T monad and merge the finite and infinite transactions by
 -- date.
 execT :: Time t => T t a b -> [Transaction t a]
 execT tm = merge (tw^.singles.to toList) (tw^.infinites)
   where
-    tw = execWriter tm
+    tw = execState tm mempty
 
 -- * Helpers
 
@@ -101,7 +101,7 @@ every p next from im = mempty & infinites .~ (p ts) & append
     ts = iterate next t0
 
 append :: Time t => TParam t ann -> T t ann ()
-append = tell
+append ts = modify (<> ts)
 
 -- * API
 

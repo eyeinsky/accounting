@@ -6,6 +6,7 @@ module LocalPrelude
 import Control.Arrow as Export hiding ((<+>))
 import Control.Lens as Export hiding ((|>), un, at)
 import Control.Monad.Writer as Export
+import Control.Monad.State as Export
 import Data.Coerce as Export
 import Data.DList as Export (DList)
 import Data.Foldable as Export
