@@ -21,6 +21,7 @@ import Data.Time as Export
 import Data.Time.Lens as Export
 import Prelude as Export hiding ((^), log, until)
 import Text.Printf as Export
+import Control.Exception as Export
 import qualified Data.HashMap.Strict as HM
 
 todo :: a

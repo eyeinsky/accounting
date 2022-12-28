@@ -29,6 +29,14 @@ year f a = fmap mk (f y)
     (y, m, d) = toGregorian a
     mk y' = fromGregorian y' m d
 
+type YearMonth = (Integer, Int)
+
+yearMonth :: Lens' Day YearMonth
+yearMonth f a = fmap mk (f (y, m))
+  where
+    (y, m, d) = toGregorian a
+    mk (y', m') = fromGregorian y' m' d
+
 weekday :: Lens' Day DayOfWeek
 weekday f a = fmap mk (f $ toEnum $ i - 1)
   where
