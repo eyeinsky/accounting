@@ -71,7 +71,7 @@ kirjeldus text = annotate $ Annotation $ Just text
 
 -- * Tehingud
 
-tehingud :: [Transaction Day Annotation]
+tehingud :: IO [Transaction Day Annotation]
 tehingud = execT $ do
 
   -- * 2020
@@ -146,6 +146,7 @@ tehingud = execT $ do
 
 main :: IO ()
 main = do
+  tehingud <- tehingud
   nl
 
   tekst "Käibemaksudeklaratsioonid:"
