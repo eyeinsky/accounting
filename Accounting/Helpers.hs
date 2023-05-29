@@ -116,3 +116,11 @@ toAccountTypes ts = foldl f mempty $ insideOut ts
 
 calcKm :: Fractional b => b -> (b, b)
 calcKm sum = (sum * 20 / 120, sum * 100 / 120)
+
+-- * Time
+
+d :: Integer -> Int -> Int -> Day
+d = fromGregorian
+
+between :: Ord a => a -> a -> a -> Bool
+between t minBound maxBound = minBound <= t && t <= maxBound
