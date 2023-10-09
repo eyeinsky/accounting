@@ -123,4 +123,4 @@ d :: Integer -> Int -> Int -> Day
 d = fromGregorian
 
 between :: Ord a => a -> a -> a -> Bool
-between t minBound maxBound = minBound <= t && t <= maxBound
+between minBound maxBound t = minBound <= t && t <= maxBound
