@@ -80,8 +80,8 @@ merge as [] = as
 verify :: Transaction t a -> Bool
 verify (Transaction _ _ is) = sum (map (^.amount) is) == 0
 
-transact :: Time t => t -> I ann a -> T t ann ()
-transact time im = append $ singles .~ pure tr $ mempty
+transact :: Time t => t -> I ann a -> T t ann (Transaction t ann)
+transact time im = (append $ singles .~ pure tr $ mempty) $> tr
   where
     (ann, is) = execI im
     tr = Transaction time ann is

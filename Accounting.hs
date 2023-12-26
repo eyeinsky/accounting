@@ -64,7 +64,7 @@ tsByYear ts@(_ : _) = go (earliestTr^.time.year) ts
       (ts', rest) = partition (\t -> t^.time.year == year') ts
       in (year', ts') : go (year' + 1) rest
 
-at :: Time t => t -> I ann a -> T t ann ()
+at :: Time t => t -> I ann a -> T t ann (Transaction t ann)
 at = transact
 
 -- * State

@@ -11,6 +11,7 @@ import Data.Coerce as Export
 import Data.DList as Export (DList)
 import Data.Foldable as Export
 import Data.Function as Export (on)
+import Data.Functor as Export (($>))
 import Data.Hashable
 import Data.List as Export hiding (uncons)
 import Data.Maybe as Export
