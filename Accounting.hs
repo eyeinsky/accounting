@@ -54,12 +54,12 @@ tsByYear ts@(_ : _) = go (earliestTr^.time.year) ts
       (ts', rest) = partition (\t -> t^.time.year == year') ts
       in (year', ts') : go (year' + 1) rest
 
-at :: Time t => t -> I ann a -> T t ann (Transaction t ann)
+at :: Ord t => t -> I ann a -> T t ann (Transaction t ann)
 at = transact
 
 -- * State
 
-getAllTransactions :: Time t => T t ann [Transaction t ann]
+getAllTransactions :: Ord t => T t ann [Transaction t ann]
 getAllTransactions = do
   tParam <- get
   let
@@ -68,22 +68,22 @@ getAllTransactions = do
       & takeWhile (\t -> t^.time < (last singles'^.time))
   pure $ merge singles' infinites'
 
-getBalance :: Time t => Account -> T t ann Amount
+getBalance :: Ord t => Account -> T t ann Amount
 getBalance account = balance account <$> getAllTransactions
 
-getBalanceFilter :: Time t => Account -> (Transaction t ann -> Bool) -> T t ann Amount
+getBalanceFilter :: Ord t => Account -> (Transaction t ann -> Bool) -> T t ann Amount
 getBalanceFilter account p = balance account . filter p <$> getAllTransactions
 
 -- ** Assert
 
-assertBalance :: Time t => String -> Account -> Amount -> T t ann ()
+assertBalance :: Ord t => String -> Account -> Amount -> T t ann ()
 assertBalance label account expected = do
   actual <- getBalance account
   when (actual /= expected) $ fail $ errMsg label account actual expected
 
 type P t ann = Transaction t ann -> Bool
 
-assertBalancesFilter :: Time t => String -> Account -> P t ann -> Amount -> T t ann ()
+assertBalancesFilter :: Ord t => String -> Account -> P t ann -> Amount -> T t ann ()
 assertBalancesFilter label account p expected = do
   actual <- getBalanceFilter account p
   okOrFail (actual == expected) label $ errMsg label account actual expected
@@ -110,7 +110,7 @@ okOrFail cond trueMsg falseMsg = liftIO $ if cond
   then putStrLn $ "OK: " <> trueMsg
   else fail falseMsg
 
-ok :: Time t => String -> T t ann ()
+ok :: Ord t => String -> T t ann ()
 ok label = printMsg $ "OK: " <> label
 
 errMsg :: String -> Account -> Amount -> Amount -> String
@@ -125,20 +125,20 @@ errMsg _label account actual expected = "Account "
 
 -- | Report account balance via Debug.Trace. TODO: Use a type system
 -- reified version of this instead.
-traceBalance :: Time t => String -> Account -> T t ann ()
+traceBalance :: Ord t => String -> Account -> T t ann ()
 traceBalance label account = do
   balance <- getBalance account
   printMsg $ label <> ": " <> balanceStr account balance
 
-traceBalance_ :: Time t => Account -> T t ann ()
+traceBalance_ :: Ord t => Account -> T t ann ()
 traceBalance_ = traceBalance ""
 
-traceBalances :: Time t => String -> [Account] -> T t ann ()
+traceBalances :: Ord t => String -> [Account] -> T t ann ()
 traceBalances label accounts = do
   accounts'balances <- mapM (\a -> (a,) <$> getBalance a) accounts
   labelBalancesStr label accounts'balances
 
-traceBalancesFilter :: Time t => String -> [Account] -> P t ann -> T t ann ()
+traceBalancesFilter :: Ord t => String -> [Account] -> P t ann -> T t ann ()
 traceBalancesFilter label accounts p = do
   accounts'balances <- mapM (\a -> (a,) <$> getBalanceFilter a p) accounts
   labelBalancesStr label accounts'balances
@@ -173,5 +173,5 @@ getTransactionsAt ym = getFilteredTx (\t -> t^.time.yearMonth == ym)
 getTransactionsUntil :: (Integer, Int) -> T Day ann [Transaction Day ann]
 getTransactionsUntil ym = getFilteredTx (\t -> t^.time.yearMonth <= ym)
 
-printMsg :: Time t => String -> T t ann ()
+printMsg :: Ord t => String -> T t ann ()
 printMsg = liftIO . putStrLn . ("Msg: " <>)
