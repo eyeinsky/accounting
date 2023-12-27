@@ -37,7 +37,7 @@ lõpukanne maybeAnn ts koond aruandeperioodiKasum = let
   aasta = head ts^.time.year :: Integer
   (_,_,_, tulud, kulud) = toAccountTypes ts
   (instructions, _) = lõpukandeInstruktsioonid tulud kulud koond aruandeperioodiKasum
-  lkTime = stringDate $ show aasta <> "-12-31"
+  lkTime = d aasta 12 31
   (ann, instructions') = execI instructions
   in Transaction lkTime (fromMaybe mempty maybeAnn <> ann) instructions'
 

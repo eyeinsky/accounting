@@ -76,30 +76,30 @@ tehingud = execT $ do
 
   -- * 2020
 
-  at (stringDate "2020-01-15") $ do
+  at (d 2020 01 15) $ do
     kirjeldus "Omakapital"
     omakapital ~> pank $ 2500.00
 
-  at (stringDate "2020-02-15") $ do
+  at (d 2020 02 15) $ do
     kirjeldus "Müük: müügiarve, ostja käibemaksukohuslane"
     tulu ~> võlgMulle $ 4000
     väljundKM ~> võlgMulle $ 800
     võlgMulle ~> pank $ 4800
 
-  at (stringDate "2020-02-20") $ do
+  at (d 2020 02 20) $ do
     kirjeldus "Ost: arvega ostetud asi"
     võlg ~> kulu $ 300
     võlg ~> sisendKM $ 60
-  at (stringDate "2020-02-24") $ do
+  at (d 2020 02 24) $ do
     pank ~> võlg $ 360
 
-  at (stringDate "2020-02-25") $ do
+  at (d 2020 02 25) $ do
     kirjeldus "Ost: teine, kohe makstud asi"
     võlg ~> kulu $ 22
     võlg ~> sisendKM $ 4.4
     pank ~> võlg $ 26.4
 
-  at (stringDate "2020-03-15") $ do
+  at (d 2020 03 15) $ do
     kirjeldus "Käibemaks: 2020-02"
     -- | Kanname käibemaksu konto @käibemaks@ peale kokku. Sisend ja
     -- väljund on peale seda nullis.
@@ -112,26 +112,26 @@ tehingud = execT $ do
 
   -- * 2021
 
-  at (stringDate "2021-02-15") $ do
+  at (d 2021 02 15) $ do
     kirjeldus "Müük: teenuse osutamine"
     tulu ~> võlgMulle $ 5000
     väljundKM ~> võlgMulle $ 1000
     võlgMulle ~> pank $ 6000
 
-  at (stringDate "2021-02-20") $ do
+  at (d 2021 02 20) $ do
     kirjeldus "Ost: arvega ostetud asi, nt monitor"
     võlg ~> kulu $ 400
     võlg ~> sisendKM $ 80
-  at (stringDate "2021-02-24") $ do
+  at (d 2021 02 24) $ do
     pank ~> võlg $ 480
 
-  at (stringDate "2021-02-25") $ do
+  at (d 2021 02 25) $ do
     kirjeldus "Ost: teine, kohe makstud asi"
     võlg ~> kulu $ 50
     võlg ~> sisendKM $ 10
     pank ~> võlg $ 60
 
-  at (stringDate "2021-03-15") $ do
+  at (d 2021 03 15) $ do
     kirjeldus "Käibemaks: 2021-02"
     -- | Kanname käibemaksu konto @käibemaks@ peale kokku. Sisend ja
     -- väljund on peale seda nullis.
