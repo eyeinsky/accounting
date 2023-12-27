@@ -13,6 +13,7 @@ newtype Amount = Amount
   { amountUn :: Scientific
   } deriving stock (Eq, Ord)
     deriving Show via Scientific
+    deriving Read via Scientific
     deriving Num via Scientific
     deriving Fractional via Scientific
 makeFields ''Amount
@@ -22,7 +23,7 @@ makeFields ''Amount
 data Account = Account
   { accountNumber :: Int
   , accountName :: String
-  } deriving (Show, Typeable, Data, Generic)
+  } deriving (Show, Read, Typeable, Data, Generic)
 makeFields ''Account
 
 instance Eq Account where
@@ -36,7 +37,7 @@ deriving instance H.Hashable Account
 data Instruction = Instruction
   { instructionAmount :: Amount
   , instructionAccount :: Account
-  } deriving (Show)
+  } deriving (Show, Read, Eq, Ord)
 makeFields ''Instruction
 
 -- ** Transaction
@@ -47,7 +48,9 @@ type Time a = (Eq a, Ord a, Enum a, Show a)
 data Transaction t a where
   Transaction :: Time t => t -> a -> [Instruction] -> Transaction t a
 
+deriving instance (Eq t, Eq a) => Eq (Transaction t a)
 deriving instance (Show t, Show a) => Show (Transaction t a)
+deriving instance (Read t, Read a, Ord t, Enum t, Show t) => Read (Transaction t a)
 
 class HasTime s a | s -> a where
   time :: Lens' s a
