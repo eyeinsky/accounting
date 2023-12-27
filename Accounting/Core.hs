@@ -38,11 +38,9 @@ makeFields ''Instruction
 
 -- ** Transaction
 
-type Time a = (Eq a, Ord a, Enum a, Show a)
-
 -- | Transaction with time resolution and annotation
 data Transaction t a where
-  Transaction :: Time t => t -> a -> [Instruction] -> Transaction t a
+  Transaction :: t -> a -> [Instruction] -> Transaction t a
 
 deriving instance (Eq t, Eq a) => Eq (Transaction t a)
 deriving instance (Show t, Show a) => Show (Transaction t a)

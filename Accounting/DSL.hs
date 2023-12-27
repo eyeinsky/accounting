@@ -47,20 +47,20 @@ data TParam t a = TParam
   -}
 makeFields ''TParam
 
-instance Time t => Semigroup (TParam t a) where
+instance Ord t => Semigroup (TParam t a) where
   a <> b = TParam x y
     where
       x = (mappend `on` view singles) a b
       y = (merge `on` view infinites) a b
 
-instance Time t => Monoid (TParam t a) where
+instance Ord t => Monoid (TParam t a) where
   mempty = TParam mempty mempty
 
 type T t ann = StateT (TParam t ann) IO
 
 -- | Run the T monad and merge the finite and infinite transactions by
 -- date.
-execT :: Time t => T t a b -> IO [Transaction t a]
+execT :: Ord t => T t a b -> IO [Transaction t a]
 execT tm = merge' <$> execStateT tm mempty
   where
     merge' tw = merge (tw^.singles.to toList) (tw^.infinites)
@@ -68,7 +68,7 @@ execT tm = merge' <$> execStateT tm mempty
 -- * Helpers
 
 -- | Merge a two lists of transactions and keep transactions' time-ordering
-merge :: Time t => [Transaction t a] -> [Transaction t a] -> [Transaction t a]
+merge :: Ord t => [Transaction t a] -> [Transaction t a] -> [Transaction t a]
 merge ass@(a : as) bss@(b : bs) = case (compare `on` view time) a b of
   LT -> a : merge as bss
   EQ -> a : b : merge as bs
@@ -80,7 +80,7 @@ merge as [] = as
 verify :: Transaction t a -> Bool
 verify (Transaction _ _ is) = sum (map (^.amount) is) == 0
 
-transact :: Time t => t -> I ann a -> T t ann (Transaction t ann)
+transact :: Ord t => t -> I ann a -> T t ann (Transaction t ann)
 transact time im = (append $ singles .~ pure tr $ mempty) $> tr
   where
     (ann, is) = execI im
@@ -91,16 +91,14 @@ type Filter t a = [Transaction t a] -> [Transaction t a]
 -- | Repeat transaction with iterating with 'next', starting from
 -- 'from', then applying 'f' to perhaps filter or take a certain
 -- amount.
-every
-  :: forall t ann b. Time t
-  => Filter t ann -> (Transaction t ann -> Transaction t ann) -> t -> I ann b -> T t ann ()
+every :: Ord t => Filter t ann -> (Transaction t ann -> Transaction t ann) -> t -> I ann b -> T t ann ()
 every p next from im = mempty & infinites .~ (p ts) & append
   where
     (ann, is) = execI im
     t0 = Transaction from ann is
     ts = iterate next t0
 
-append :: Time t => TParam t ann -> T t ann ()
+append :: Ord t => TParam t ann -> T t ann ()
 append ts = modify (<> ts)
 
 -- * API
@@ -133,7 +131,7 @@ infixl 5 -|, +|, |-, |+, ~>
 -- ** Transaction
 
 -- | A specialised 'every' taking until time 't'
-until :: Time t => t -> (Transaction t ann -> Transaction t ann) -> t -> I ann b -> T t ann ()
+until :: Ord t => t -> (Transaction t ann -> Transaction t ann) -> t -> I ann b -> T t ann ()
 until t = every (filter (\tr -> tr^.time < t))
 
 monthly :: Filter Day ann -> Day -> I ann b -> T Day ann ()
