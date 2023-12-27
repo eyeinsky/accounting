@@ -154,9 +154,10 @@ printAastaaruanded
   -> Account
   -> [Account]
   -> Integer                       -- ^ Kuni aastani
+  -> Maybe Integer
   -> [Transaction Day a]
   -> IO ()
-printAastaaruanded mkAnn ktKoond aruandeperioodiKasum tööjõukuluKontod kuniAastani ts = do
+printAastaaruanded mkAnn ktKoond aruandeperioodiKasum tööjõukuluKontod kuniAastani printYear ts = do
   let koosLk' = aastaaruanded mkAnn ts ktKoond aruandeperioodiKasum :: [YearTS a]
       koosLk = takeWhile (\(y, _, _) -> y <= kuniAastani) koosLk' :: [YearTS a]
 
@@ -171,5 +172,9 @@ printAastaaruanded mkAnn ktKoond aruandeperioodiKasum tööjõukuluKontod kuniAa
           in (seeAasta, tsAcc', tsSeeAasta) : acc
         in foldl' f [(y, ts', ts')] koosLkZip
 
-  forM_ aastadAccTs $ \(aasta, tsAcc, tsAasta) -> do
+  let aastadAccTs' = case printYear of
+        Just printThisAasta -> filter (\(aasta, _, _) -> printThisAasta == aasta) aastadAccTs
+        Nothing -> aastadAccTs
+
+  forM_ aastadAccTs' $ \(aasta, tsAcc, tsAasta) -> do
     printAastaaruanne tööjõukuluKontod tsAasta tsAcc (Just $ TS.pack $ show aasta)
