@@ -5,7 +5,6 @@ import qualified Data.HashMap.Lazy as HM
 import LocalPrelude
 import Accounting.Core
 
-
 type InsideOut t a = (Instruction, Transaction t a)
 
 -- | All instructions for account

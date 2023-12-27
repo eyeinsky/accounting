@@ -1,0 +1,42 @@
+cabal-version: 1.12
+
+name:           accounting
+version:        0.0.1
+category:       Finance
+maintainer:     Markus Läll <markus.l2ll@gmail.com>
+license:        MIT
+license-file:   LICENSE
+build-type:     Simple
+
+library
+  exposed-modules:
+      Accounting
+      Accounting.Analysis
+      Accounting.Core
+      Accounting.DSL
+      Accounting.Helpers
+      Accounting.Print
+      Data.Time.Lens
+      Eesti
+      Eesti.Aastaaruanne
+      Eesti.Näide
+      LocalPrelude
+  hs-source-dirs: .
+  default-extensions:
+    TemplateHaskell
+    DerivingStrategies
+    FunctionalDependencies
+    NoImplicitPrelude
+    MultiWayIf
+  ghc-options: -Wall -Wno-name-shadowing
+  build-depends:
+      base
+    , dlist
+    , hashable
+    , lens
+    , mtl
+    , scientific
+    , text
+    , time
+    , unordered-containers
+  default-language: GHC2021

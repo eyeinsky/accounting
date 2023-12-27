@@ -5,6 +5,7 @@ module LocalPrelude
 
 import Control.Arrow as Export hiding ((<+>))
 import Control.Lens as Export hiding ((|>), un, at)
+import Control.Monad as Export (guard, when, forM, void)
 import Control.Monad.Writer as Export
 import Control.Monad.State as Export
 import Data.Coerce as Export
