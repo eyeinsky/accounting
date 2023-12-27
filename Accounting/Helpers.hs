@@ -31,34 +31,13 @@ accountType acc = case acc^.number.to (head . show) of
 bankMonth :: Account -> Integer -> Int -> [Transaction Day a] -> ((Amount, [Amount]), (Amount, [Amount]))
 bankMonth acc y m ts = (sum' debits, sum' credits)
   where
-    (debits, credits) = partition (\t -> t^._1.amount > 0) $ accountTransactions acc $ filter (selectYM y m) ts
+    (debits, credits) = partition (\t -> t^._1.amount > 0) $ accountFilter (== acc) $ filter (selectYM y m) ts
     sum' d = let
       amounts = map (view $ _1.amount) d
       -- in (sum amounts) -- , amounts)
       in (sum amounts, amounts)
     selectYM :: HasTime s Day => Integer -> Int -> s -> Bool
     selectYM year' month' t = t^.time.year == year' && t^.time.month == month'
-
--- ** Saldo
-
-saldoFilter :: (Account -> Bool) -> [Transaction t a] -> Amount
-saldoFilter p ts = ts
-  & accountFilter p
-  & map fst
-  & sumAmount
-
--- | All debited instructions from account
-saldoDebit :: Account -> [Transaction t a] -> [(Instruction, Transaction t a)]
-saldoDebit acc ts = filter (\t -> t^._1.amount > 0) $ accountTransactions acc ts
-
--- | All credited instructions from account
-saldoCredit :: Account -> [Transaction t a] -> [(Instruction, Transaction t a)]
-saldoCredit acc ts = filter (\t -> t^._1.amount < 0) $ accountTransactions acc ts
-
--- ** Inside Out
-
-byAccount :: [InsideOut t a] -> HM.HashMap Account [InsideOut t a]
-byAccount io = HM.fromListWith (\t1 t2 -> t1 <> t2) [ (tup^._1.account, [tup]) | tup <- io]
 
 -- * UI
 
@@ -113,14 +92,3 @@ toAccountTypes ts = foldl f mempty $ insideOut ts
 
     g :: InsideOut t a -> HM.HashMap Account [InsideOut t a] -> HM.HashMap Account [InsideOut t a]
     g io hm = HM.insertWith mappend (io^._1.account) (pure io) hm
-
-calcKm :: Fractional b => b -> (b, b)
-calcKm sum = (sum * 20 / 120, sum * 100 / 120)
-
--- * Time
-
-d :: Integer -> Int -> Int -> Day
-d = fromGregorian
-
-between :: Ord a => a -> a -> a -> Bool
-between minBound maxBound t = minBound <= t && t <= maxBound

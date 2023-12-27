@@ -45,3 +45,6 @@ partition' predicate hm = HM.foldlWithKey' f mempty hm
     f (trues, falses) k v = if predicate k v
       then (HM.insertWith mappend k v trues, falses)
       else (trues, HM.insertWith mappend k v falses)
+
+between :: Ord a => a -> a -> a -> Bool
+between minBound maxBound t = minBound <= t && t <= maxBound

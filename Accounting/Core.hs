@@ -12,11 +12,7 @@ import qualified Data.Hashable as H
 newtype Amount = Amount
   { amountUn :: Scientific
   } deriving stock (Eq, Ord)
-    deriving Show via Scientific
-    deriving Read via Scientific
-    deriving Num via Scientific
-    deriving Fractional via Scientific
-makeFields ''Amount
+    deriving newtype (Show, Read, Num, Fractional)
 
 -- ** Instruction
 

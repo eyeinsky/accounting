@@ -141,3 +141,7 @@ monthly f = every f (time.month %~ (+1))
 
 weekly :: Filter Day ann -> Day -> I ann b -> T Day ann ()
 weekly f = every f (time.day %~ (+7))
+
+-- | Shorter version to create a date
+d :: Integer -> Int -> Int -> Day
+d = fromGregorian

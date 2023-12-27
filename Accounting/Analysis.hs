@@ -1,11 +1,50 @@
-module Accounting.Reports where
+module Accounting.Analysis where
 
 import qualified Data.HashMap.Lazy as HM
 
 import LocalPrelude
 import Accounting.Core
 
+
 type InsideOut t a = (Instruction, Transaction t a)
+
+-- | All instructions for account
+accountFilter :: (Account -> Bool) -> [Transaction t a] -> [InsideOut t a]
+accountFilter predicate ts = filter (\tup -> predicate $ tup^._1.account) $ insideOut ts
+
+-- | Balance (sum of debits and credits) for a single account
+balance :: Account -> [Transaction t a] -> Amount
+balance acc ts = sumAmount $ map fst $ accountFilter (== acc) ts
+  where
+    sumAmount :: [Instruction] -> Amount
+    sumAmount is = foldl (\n i -> n + (i^.amount)) 0 is
+
+-- | Balance sheet from InsideOut. The tx/InsideOut must already be filtered appropriately.
+balanceSheet :: [InsideOut Day ann] -> HM.HashMap Account Amount
+balanceSheet ios = HM.fromListWith (+) $ do
+  (ix, tx) <- ios
+  pure (ix ^. account, ix ^. amount)
+
+-- * Journal
+
+-- | Print all events for a single account in format: tx.date, ix.amount, tx.description
+accountJournal :: Account -> [Transaction Day String] -> IO ()
+accountJournal account_ ts = ts
+  & sortBy (compare `on` view time)
+  & insideOut
+  & filter (fst ^ view account ^ eq account_)
+  & mapM_ printLn
+  where
+    printLn (ix, tx) = putStrLn $ printf "%s %6s %s"
+      (tx^.time.to show)
+      (ix^.amount.to (fixedSpaceAmount 2))
+      (tx^.annotation)
+
+    fixedSpaceAmount :: Int -> Amount -> String
+    fixedSpaceAmount digits amount = formatScientific Fixed (Just digits) (coerce amount)
+
+
+-- old
 
 type Balances t a = HM.HashMap Account [InsideOut t a]
 
