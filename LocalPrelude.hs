@@ -1,3 +1,4 @@
+{-# LANGUAGE PatternSynonyms #-}
 module LocalPrelude
   ( module LocalPrelude
   , module Export
@@ -49,3 +50,9 @@ partition' predicate hm = HM.foldlWithKey' f mempty hm
 
 between :: Ord a => a -> a -> a -> Bool
 between minBound maxBound t = minBound <= t && t <= maxBound
+
+-- Stolen from Oleg Grenrus: https://oleg.fi/gists/posts/2023-07-09-infix-pair-type-and-pattern.html
+type (:=) a b = (a, b)
+pattern (:=) :: a -> b -> a := b
+pattern (:=) a b = (a, b)
+infixr 0 :=
