@@ -31,8 +31,14 @@ import Accounting.Print as Export
 
 -- * Helpers
 
+calcKmOld :: Fractional b => b -> (b, b)
+calcKmOld sum = (sum * 20 / 120, sum * 100 / 120)
+
 calcKm :: Fractional b => b -> (b, b)
-calcKm sum = (sum * 20 / 120, sum * 100 / 120)
+calcKm sum = (sum * km / total, sum * 100 / total)
+  where
+    km = 22
+    total = 100 + km
 
 listUsedAccounts :: [Transaction t a] -> [Account]
 listUsedAccounts ts = sort $ nubBy cmp $ do
