@@ -154,7 +154,7 @@ printAastaaruanded
   -> Account
   -> [Account]
   -> Integer                       -- ^ Kuni aastani
-  -> Maybe Integer
+  -> Maybe Integer                 -- ^ Print this year; Nothing prints all years
   -> [Transaction Day a]
   -> IO ()
 printAastaaruanded mkAnn ktKoond aruandeperioodiKasum tööjõukuluKontod kuniAastani printYear ts = do
